@@ -1,0 +1,113 @@
+<html>
+<head>
+    <title>SURF BORT</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+    <link rel="stylesheet" type="text/css" href="style.css">
+
+</head>
+<body>
+
+    <div class="wrapper">
+        <div class="controls">
+            <label><input id="oneonly" type="checkbox">One at a time</label>
+            <p class="help"><i>pro tip:</i> use the number keys, hold shift for more</p>
+        </div>
+        <button class="pad" data-sample="airhorn" disabled>AIRHORN</button>
+        <button class="pad" data-sample="bort" disabled>SURF BORT</button>
+        <button class="pad" data-sample="realtrapshit" disabled>REAL TRAP SHIT</button>
+        <button class="pad" data-sample="damnson" disabled>DAMN SON</button>
+        <button class="pad" data-sample="grindin" disabled>GRINDIN</button>
+        <button class="pad" data-sample="yeahboy" disabled>YEAH BOY</button>
+        <button class="pad" data-sample="whut" disabled>WHUT</button>
+        <button class="pad" data-sample="cuffyochick" disabled>CUFF YO CHICK</button>
+        <button class="pad" data-sample="ross" disabled>ROSS</button>
+        <button class="pad" data-sample="hustlin" disabled>HUSTLIN</button>
+        <button class="pad" data-sample="maddawg" disabled>MAD DAWG</button>
+        <button class="pad" data-sample="maddog" disabled>MAD DOG</button>
+    </div>
+
+    <script src="howler.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+
+    <script>
+
+        var socket = io.connect(document.location.origin);
+
+        (function(){
+            var oneOnly = false;
+            var pads = document.querySelectorAll('.pad');
+            var samples = [];
+            var sampleNames = [];
+            var loadedSamples = [];
+            var sampleCount = pads.length;
+
+
+            for(var z=0; z<sampleCount; z++){
+                (function(){
+                    var i = z;
+                    var pad = pads[i];
+                    var sampleName = pad.getAttribute('data-sample');
+                    sampleNames.push(sampleName);
+                    loadedSamples.push(false);
+                    samples.push(new Howl({
+                        urls: ['samples/' + sampleName + '.wav', 'samples/' + sampleName + '.mp3', 'samples/' + sampleName + '.ogg'],
+                        onload: function(){
+                            console.log('loaded sample ' + sampleName);
+                            pads[i].removeAttribute('disabled');
+                            loadedSamples[i] = true;
+                        }
+                    }));
+
+                    var eventType = 'ontouchstart' in document.documentElement ? 'touchstart' : 'click';
+                    pad.addEventListener(eventType, function(){
+                        socket.emit('play', i);
+                        playSample(i);
+                    });
+
+                })();
+            }
+
+            var playSample = function(i){
+                if(oneOnly) stopAll();
+
+                pads[i].classList.add('active');
+                samples[i].stop().play().on('end', function(){
+                    pads[i].classList.remove('active');
+                });
+            }
+
+            var stopAll = function(){
+                var x = sampleCount;
+                while(x--){
+                    samples[x].stop();
+                    pads[x].classList.remove('active');
+                }
+            };
+
+            document.getElementById('oneonly').addEventListener('change', function(evt){
+                oneOnly = evt.currentTarget.checked;
+            });
+
+            document.addEventListener('keyup', function(evt){
+                var x = evt.keyCode - 49;
+                if(evt.keyCode === 48) x = 9;
+                if(evt.shiftKey) x += 10;
+                try{
+                    if(loadedSamples[x]){
+                        socket.emit('play', x);
+                        playSample(x)
+                    }
+                } catch(e) {}
+            });
+
+            socket.on('play', function(id){
+                playSample(id);
+            });
+
+        })();
+    </script>
+
+
+</body>
+</html>
