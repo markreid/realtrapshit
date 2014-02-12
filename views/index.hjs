@@ -115,6 +115,7 @@
                     onlineList.push(name);
                 }
                 document.querySelector('#online span').textContent = onlineList.join(', ');
+                document.title = 'REAL TRAP SHIT (' + onlineList.length + ')';
             };
             var resetOnlineUsers = function(usersArray){
                 onlineUsers = {};
