@@ -25,6 +25,7 @@
         <button class="pad" data-sample="hustlin" disabled>HUSTLIN</button>
         <button class="pad" data-sample="maddawg" disabled>MAD DAWG</button>
         <button class="pad" data-sample="maddog" disabled>MAD DOG</button>
+        <button class="pad" data-sample="drank" disabled>DRANK</button>
     </div>
 
     <div id="online">
