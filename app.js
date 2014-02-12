@@ -135,7 +135,7 @@ io.sockets.on('connection', function(socket){
 
     socket.on('play', function(sampleId){
         console.log(sampleId);
-        socket.broadcast.emit('play', sampleId);
+        socket.broadcast.emit('play', sampleId, user.name.givenName);
     });
 
     socket.on('disconnect', function(){

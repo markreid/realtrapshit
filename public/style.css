@@ -43,6 +43,27 @@ body {
 	color: #C33;
 }
 
+#log {
+	font-size: 10px;
+	text-align: left;
+	width: 80%;
+	margin: 1em auto 0;
+	color: #777;
+	font-weight: normal;
+	border: 1px solid #DDD;
+	padding: 4px;
+	max-height: 140px;
+	overflow: auto;
+}
+
+#log p {
+	margin: 0;
+}
+
+#log p:nth-of-type(odd){
+	background: #eee;
+}
+
 .pad {
 	box-sizing: border-box;
 	padding: 5%;
