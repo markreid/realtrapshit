@@ -61,6 +61,7 @@
 
                     var eventType = 'ontouchstart' in document.documentElement ? 'touchstart' : 'click';
                     pad.addEventListener(eventType, function(){
+                        console.log('emit ' + i);
                         socket.emit('play', i);
                         playSample(i);
                     });
@@ -102,6 +103,7 @@
             });
 
             socket.on('play', function(id){
+                console.log('receive ' + id);
                 playSample(id);
             });
 

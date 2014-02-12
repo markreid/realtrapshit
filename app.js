@@ -96,8 +96,8 @@ io.sockets.on('connection', function(socket){
     console.info('socket connected');
 
     socket.on('play', function(sampleId){
-        console.info(sampleId);
-        io.sockets.emit('play', sampleId);
+        console.log(sampleId);
+        socket.broadcast.emit('play', sampleId);
     });
 
 });
