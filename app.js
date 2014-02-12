@@ -68,11 +68,8 @@ passport.deserializeUser(function(obj, done){
 });
 
 passport.use(new passportGoogleStrategy({
-	//returnURL: 'http://realtrapshit.votetong.com/auth/google/return',
-	//realm: 'http://realtrapshit.votetong.com/'
-	returnURL: 'http://localhost:4000/auth/google/return',
-	realm: 'http://localhost:4000/'
-
+	returnURL: config.googleReturnURL,
+	realm: config.googleRealm
 }, function googleAuthCallback(identifier, profile, done){
 	// attach the identifier to the profile, which is our user object
 	profile.identifier = identifier;
