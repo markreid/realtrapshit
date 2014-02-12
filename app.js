@@ -12,11 +12,14 @@ var path = require('path');
 var passport = require('passport');
 var passportGoogleStrategy = require('passport-google').Strategy;
 
+// settings file
+var config = require('./config');
+
 
 // instantiate and configure expressjs
 var app = express();
 
-app.set('port', process.env.PORT || 4000);
+app.set('port', config.port || 4000);
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'hjs');
 app.use(express.favicon());
