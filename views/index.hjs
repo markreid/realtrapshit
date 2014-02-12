@@ -27,6 +27,10 @@
         <button class="pad" data-sample="maddog" disabled>MAD DOG</button>
     </div>
 
+    <div id="online">
+        Users online: <span></span>
+    </div>
+
     <script src="howler.js"></script>
     <script src="/socket.io/socket.io.js"></script>
 
@@ -102,6 +106,15 @@
                 } catch(e) {}
             });
 
+            var onlineUsers = {};
+            var renderOnlineUsers = function(){
+                var onlineList = [];
+                for(var name in onlineUsers){
+                    onlineList.push(name);
+                }
+                document.querySelector('#online span').textContent = onlineList.join(', ');
+            };
+
             // socket listeners
             socket.on('play', function(id){
                 console.log('receive ' + id);
@@ -110,10 +123,14 @@
 
             socket.on('user.connected', function(user){
                 console.log('user connected: ' + user);
+                onlineUsers[user] = true;
+                renderOnlineUsers();
             });
 
             socket.on('user.disconnected', function(user){
                 console.log('user disconnected: ' + user);
+                delete(onlineUsers[user]);
+                renderOnlineUsers();
             });
 
         })();

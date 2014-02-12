@@ -27,7 +27,13 @@ body {
 	text-align: center;
 	width: 100%;
 	max-width: 400px;
-	margin: 0 auto;
+	margin: 0 auto 1em;
+	overflow: hidden;
+}
+
+#online {
+	font-size: 12px;
+	text-align: center;
 }
 
 .pad {
