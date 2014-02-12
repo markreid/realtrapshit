@@ -1,6 +1,7 @@
 body {
 	font-family: Helvetica Neue;
 	font-weight: 200;
+	text-align: center;
 }
 
 #oneonly {
@@ -34,6 +35,12 @@ body {
 #online {
 	font-size: 12px;
 	text-align: center;
+	margin: 0 auto 1em;
+}
+
+#error {
+	font-size: 12px;
+	color: #C33;
 }
 
 .pad {

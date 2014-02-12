@@ -31,6 +31,8 @@
         Users online: <span></span>
     </div>
 
+    <div id="error"></div>
+
     <script src="howler.js"></script>
     <script src="/socket.io/socket.io.js"></script>
 
@@ -114,11 +116,25 @@
                 }
                 document.querySelector('#online span').textContent = onlineList.join(', ');
             };
+            var resetOnlineUsers = function(usersArray){
+                onlineUsers = {};
+                usersArray.forEach(function(username){
+                    onlineUsers[username] = true;
+                });
+            };
 
             // socket listeners
             socket.on('play', function(id){
                 console.log('receive ' + id);
                 playSample(id);
+            });
+
+            socket.on('connect', function(){
+                document.getElementById('error').textContent = '';
+            });
+
+            socket.on('reconnecting', function(){
+                document.getElementById('error').textContent = 'error connecting to socket, retrying... you might want to refresh the page...';
             });
 
             socket.on('user.connected', function(user){
@@ -131,6 +147,17 @@
                 console.log('user disconnected: ' + user);
                 delete(onlineUsers[user]);
                 renderOnlineUsers();
+            });
+
+            socket.on('user.online', function(users){
+                console.log('users online');
+                console.log(users);
+                resetOnlineUsers(users);
+                renderOnlineUsers();
+            });
+
+            socket.on('error', function(){
+                console.log('ERROR');
             });
 
         })();

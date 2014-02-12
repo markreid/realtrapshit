@@ -105,23 +105,42 @@ io.configure(function(){
     });
 });
 
+
+var onlineUsers = {};
+var getOnlineUserNames = function(){
+	var usernames = [];
+	for(var i in onlineUsers){
+		if(!onlineUsers.hasOwnProperty(i)) return;
+		usernames.push(onlineUsers[i].name.givenName);
+	}
+	return usernames;
+};
+
 // socket listeners
 io.sockets.on('connection', function(socket){
-	var user;
 	try{
-		user = socket.handshake.session.passport.user;
-	} catch(e){
-		console.error('No user in socket session');
-		socket.disconnect();
+		var user = socket.handshake.session.passport.user;
+	} catch(e){}
+	if(!user){
+		console.error('No user in handshake session');
+		return socket.disconnect();
 	}
 
 	console.info(user.name.givenName + ' connected to socket');
+	onlineUsers[user.identifier] = user;
+
+	socket.emit('user.online', getOnlineUserNames());
 
     socket.broadcast.emit('user.connected', user.name.givenName);
 
     socket.on('play', function(sampleId){
         console.log(sampleId);
         socket.broadcast.emit('play', sampleId);
+    });
+
+    socket.on('disconnect', function(){
+    	delete(onlineUsers[user.identifier]);
+    	io.sockets.emit('user.online', getOnlineUserNames());
     });
 
 });
