@@ -1,6 +1,6 @@
 <html>
 <head>
-    <title>SURF BORT</title>
+    <title>REAL TRAP SHIT</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
 
     <link rel="stylesheet" type="text/css" href="style.css">
@@ -102,9 +102,18 @@
                 } catch(e) {}
             });
 
+            // socket listeners
             socket.on('play', function(id){
                 console.log('receive ' + id);
                 playSample(id);
+            });
+
+            socket.on('user.connected', function(user){
+                console.log('user connected: ' + user);
+            });
+
+            socket.on('user.disconnected', function(user){
+                console.log('user disconnected: ' + user);
             });
 
         })();
