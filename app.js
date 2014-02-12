@@ -45,7 +45,7 @@ io.sockets.on('connection', function(socket){
 
     socket.on('play', function(sampleId){
         console.log(sampleId);
-        io.sockets.emit('play', sampleId);
+        socket.broadcast.emit('play', sampleId);
     });
 
 
