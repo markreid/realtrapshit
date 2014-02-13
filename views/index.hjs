@@ -72,7 +72,7 @@
                         console.log('emit ' + i);
                         socket.emit('play', i);
                         playSample(i);
-                        logPlay('you', i);
+                        logPlay(i, 'you');
                     });
 
                 })();
@@ -107,7 +107,7 @@
                     if(loadedSamples[x]){
                         socket.emit('play', x);
                         playSample(x);
-                        logPlay('you', x);
+                        logPlay(x, 'you');
                     }
                 } catch(e) {}
             });
