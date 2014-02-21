@@ -30,6 +30,7 @@
         <button class="pad" data-sample="cash" disabled>CASH</button>
         <button class="pad" data-sample="rekus" disabled>LAWD REKUS</button>
         <button class="pad" data-sample="icq" disabled>ICQ</button>
+        <button class="pad" data-sample="lisa" disabled>LISA</button>
     </div>
 
     <div id="online">
