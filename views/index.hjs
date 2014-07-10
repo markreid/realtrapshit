@@ -32,6 +32,7 @@
         <button class="pad" data-sample="icq" disabled>ICQ</button>
         <button class="pad" data-sample="lisa" disabled>LISA</button>
         <button class="pad" data-sample="ls" disabled>LYNDEN</button>
+        <button class="pad" data-sample="freebies" disabled>5 FREEBIES</button>
     </div>
 
     <div id="online">
