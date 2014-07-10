@@ -31,6 +31,7 @@
         <button class="pad" data-sample="rekus" disabled>LAWD REKUS</button>
         <button class="pad" data-sample="icq" disabled>ICQ</button>
         <button class="pad" data-sample="lisa" disabled>LISA</button>
+        <button class="pad" data-sample="ls" disabled>LYNDEN</button>
     </div>
 
     <div id="online">
