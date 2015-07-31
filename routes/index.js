@@ -34,11 +34,14 @@ Routes.prototype.loginPost = function(req, res){
     // no name provided
     if(!req.body.name || !req.body.name.trim()) return res.render('login', {error: 'Gimme a name, sheeeit.'});
 
+    // trim and escape
+    var name = _.escape(req.body.name.trim());
+
     // name taken
-    if(_.contains(this.onlineUsers, req.body.name.trim())) return res.render('login', {error: 'Name taken, try again.'});
+    if(_.contains(this.onlineUsers, name)) return res.render('login', {error: 'Name taken, try again.'});
 
     // all good
-    req.session.name = req.body.name.trim();
+    req.session.name = name;
     res.redirect('/');
 };
 
