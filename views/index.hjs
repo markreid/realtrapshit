@@ -31,10 +31,7 @@
         <button class="pad" data-sample="rekus" disabled>LAWD REKUS</button>
         <button class="pad" data-sample="icq" disabled>ICQ</button>
         <button class="pad" data-sample="lisa" disabled>LISA</button>
-        <button class="pad" data-sample="ls" disabled>LYNDEN</button>
-        <button class="pad" data-sample="freebies" disabled>5 FREEBIES</button>
-        <button class="pad" data-sample="godyousuck" disabled>YOU SUCK</button>
-        <button class="pad" data-sample="yourmum" disabled>YOUR MUM</button>
+        <button class="pad" data-sample="gothim" disabled>GOT HIM</button>
     </div>
 
     <div id="volume">
@@ -72,7 +69,7 @@
                     sampleNames.push(sampleName);
                     loadedSamples.push(false);
                     samples.push(new Howl({
-                        urls: ['samples/' + sampleName + '.wav', 'samples/' + sampleName + '.mp3', 'samples/' + sampleName + '.ogg'],
+                        urls: ['samples/' + sampleName + '.mp3', 'samples/' + sampleName + '.ogg'],
                         onload: function(){
                             console.log('loaded sample ' + sampleName);
                             pads[i].removeAttribute('disabled');
