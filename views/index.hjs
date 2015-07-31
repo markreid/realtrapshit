@@ -37,6 +37,10 @@
         <button class="pad" data-sample="yourmum" disabled>YOUR MUM</button>
     </div>
 
+    <div id="volume">
+        Volume <input type="range" min="1" max="10" value="10">
+    </div>
+
     <div id="online">
         Users online: <span></span>
     </div>
@@ -94,7 +98,7 @@
                 samples[i].stop().play().on('end', function(){
                     pads[i].classList.remove('active');
                 });
-            }
+            };
 
             var stopAll = function(){
                 var x = sampleCount;
@@ -119,6 +123,11 @@
                         logPlay(x, 'you');
                     }
                 } catch(e) {}
+            });
+
+            document.querySelector('#volume input').addEventListener('change', function(evt){
+                var vol = evt.currentTarget.value/10;
+                Howler.volume(vol);
             });
 
             var onlineUsers = {};

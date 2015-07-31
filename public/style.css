@@ -32,6 +32,16 @@ body {
 	overflow: hidden;
 }
 
+#volume {
+	margin-bottom: 1em;
+	font-size: 14px;
+	color: #666;
+}
+
+#volume > * {
+	vertical-align: middle;
+}
+
 #online {
 	font-size: 12px;
 	text-align: center;
