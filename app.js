@@ -6,7 +6,7 @@
 
 // module dependencies
 var express = require('express');
-var routes = require('./routes');
+var _ = require('underscore');
 var http = require('http');
 var path = require('path');
 var cookie = require('cookie');
@@ -32,55 +32,34 @@ app.use(express.json());
 app.use(express.urlencoded());
 app.use(express.methodOverride());
 app.use(express.cookieParser());
-app.use(express.session({secret:'secrety secrets', store:sessionStore}));
-// passport middleware
-app.use(passport.initialize());
-app.use(passport.session());
+app.use(express.session({secret:'oh oh oh secrety secrets', store:sessionStore}));
 app.use(app.router);
 app.use(express.static(path.join(__dirname, 'public')));
-
 
 // dev env middleware
 if ('development' == app.get('env')) {
   app.use(express.errorHandler());
 }
 
-// configure routes
+
+// routes - they need access to the onlineUsers array for rejecting in-use usernames
+var onlineUsers = [];
+var Routes = require('./routes');
+var routes = new Routes(onlineUsers);
+
 app.get('/', routes.index);
 app.get('/login', routes.login);
-
-app.get('/auth/google', passport.authenticate('google', {failureRedirect: '/login'}), function googleSuccessHandler(req, res){
-	res.redirect('/');
-});
-app.get('/auth/google/return', passport.authenticate('google', {failureRedirect: '/login'}), function(req, res){
-	console.info('successfully authenticated via google');
-	res.redirect('/');
-});
-
-
-
-// configure passport auth
-passport.serializeUser(function(user, done){
-	done(null, user);
-});
-passport.deserializeUser(function(obj, done){
-	done(null, obj);
-});
-
-passport.use(new passportGoogleStrategy({
-	returnURL: config.googleReturnURL,
-	realm: config.googleRealm
-}, function googleAuthCallback(identifier, profile, done){
-	// attach the identifier to the profile, which is our user object
-	profile.identifier = identifier;
-	done(null, profile);
-}));
+app.post('/login', routes.loginPost.bind(routes));
 
 
 // listen for incoming connections
 var server = http.createServer(app).listen(app.get('port'), function(){
 	console.log('Express server listening on port ' + app.get('port'));
 });
+
+
+// parse command line arguments
+var LOGALL = _.contains(process.argv, '--logall');
 
 
 // set up the sockets
@@ -106,41 +85,32 @@ io.configure(function(){
 });
 
 
-var onlineUsers = {};
-var getOnlineUserNames = function(){
-	var usernames = [];
-	for(var i in onlineUsers){
-		if(!onlineUsers.hasOwnProperty(i)) return;
-		usernames.push(onlineUsers[i].name.givenName);
-	}
-	return usernames;
-};
-
 // socket listeners
 io.sockets.on('connection', function(socket){
+    var username;
 	try{
-		var user = socket.handshake.session.passport.user;
+		username = socket.handshake.session.name;
 	} catch(e){}
-	if(!user){
-		console.error('No user in handshake session');
+
+    if(!username){
+		console.error('No username on handshake session...');
 		return socket.disconnect();
 	}
 
-	console.info(user.name.givenName + ' connected to socket');
-	onlineUsers[user.identifier] = user;
+	console.info(username + ' connected to socket');
+	onlineUsers.push(username);
 
-	socket.emit('user.online', getOnlineUserNames());
-
-    socket.broadcast.emit('user.connected', user.name.givenName);
+	socket.emit('user.online', onlineUsers);
+    socket.broadcast.emit('user.connected', username);
 
     socket.on('play', function(sampleId){
-        console.log(sampleId);
-        socket.broadcast.emit('play', sampleId, user.name.givenName);
+        if(LOGALL) console.log(username + ' triggered ' + sampleId);
+        socket.broadcast.emit('play', sampleId, username);
     });
 
     socket.on('disconnect', function(){
-    	delete(onlineUsers[user.identifier]);
-    	io.sockets.emit('user.online', getOnlineUserNames());
+        onlineUsers = _.without(onlineUsers, username);
+    	io.sockets.emit('user.online', onlineUsers);
     });
 
 });

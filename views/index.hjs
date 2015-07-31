@@ -141,10 +141,14 @@
             var logElement = document.getElementById('log');
             var pNode = document.createElement('p');
             var logPlay = function(id, user){
-                var p = pNode.cloneNode(false);
-                p.textContent = user + ' ' + sampleNames[id].toUpperCase() + '\'d';
-                logElement.insertBefore(p, logElement.firstChild);
+                log(user + ' ' + sampleNames[id].toUpperCase() + '\'d');
             };
+
+            function log(str){
+                var p = pNode.cloneNode(false);
+                p.textContent = str;
+                logElement.insertBefore(p, logElement.firstChild);
+            }
 
             // socket listeners
             socket.on('play', function(id, user){
@@ -164,12 +168,14 @@
                 console.log('user connected: ' + user);
                 onlineUsers[user] = true;
                 renderOnlineUsers();
+                log(user + ' joined.');
             });
 
             socket.on('user.disconnected', function(user){
                 console.log('user disconnected: ' + user);
                 delete(onlineUsers[user]);
                 renderOnlineUsers();
+                log(user + ' left.');
             });
 
             socket.on('user.online', function(users){

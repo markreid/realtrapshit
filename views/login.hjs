@@ -1,0 +1,19 @@
+<html>
+<head>
+    <title>REAL TRAP SHIT</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+    <link rel="stylesheet" type="text/css" href="style.css">
+
+</head>
+<body>
+    <form method="POST" action="/login">
+        <p>{{error}}</p>
+        <input type"text" placeholder="Gimme your name" name="name">
+        <button type="submit">LET'S GET BUSY</button>
+    </form>
+
+    <script>
+        document.querySelector('input').focus();
+    </script>
+</body>
