@@ -1,10 +1,11 @@
 # Real Trap Shit
-
-A trap-themed workplace annoyance generator.
-
+A multiplayer workplace annoyatron (socket.io-powered multiplayer soundboard)
 
 
-### Usage:
+### Installation
+    # clone the repo, npm install, profit...
+    npm install
 
-open it and mash the shit out of the keyboard. use the number keys, hold shift for more.
-mobile-optimized so you can bug the shit out of people anywhere any time.
+### Usage
+    node app.js
+    # default port is 4000

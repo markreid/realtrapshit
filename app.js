@@ -12,10 +12,9 @@ var path = require('path');
 var cookie = require('cookie');
 var MemoryStore = require('./node_modules/express/node_modules/connect/lib/middleware/session/memory');
 
-// settings file
-var config = require('./config');
 
-// instantiate and configure expressjs
+
+// Alrighty, let's configure Express
 var app = express();
 var sessionStore = new MemoryStore();
 
