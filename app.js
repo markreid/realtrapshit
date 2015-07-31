@@ -10,20 +10,16 @@ var _ = require('underscore');
 var http = require('http');
 var path = require('path');
 var cookie = require('cookie');
-var passport = require('passport');
-var passportGoogleStrategy = require('passport-google').Strategy;
-// todo - this looks dodgy
 var MemoryStore = require('./node_modules/express/node_modules/connect/lib/middleware/session/memory');
 
 // settings file
 var config = require('./config');
 
-
 // instantiate and configure expressjs
 var app = express();
 var sessionStore = new MemoryStore();
 
-app.set('port', config.port || 4000);
+app.set('port', process.env.PORT || 4000);
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'hjs');
 app.use(express.favicon());
