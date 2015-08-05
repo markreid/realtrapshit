@@ -46,6 +46,7 @@ var Routes = require('./routes');
 var routes = new Routes(onlineUsers);
 
 app.get('/', routes.index);
+app.get('/dumdum', routes.dumdum);
 app.get('/login', routes.login);
 app.post('/login', routes.loginPost.bind(routes));
 
@@ -65,17 +66,29 @@ io.configure(function(){
     io.enable('log');
     io.set('log level', 2);
     io.set('authorization', function socketHandshake(handshakeData, accept){
-    	if(!handshakeData.headers.cookie) return accept('No cookies in handshakeData');
+        if(!handshakeData.headers.cookie) return accept('No cookies in handshakeData');
 
 		var handshakeCookie = cookie.parse(handshakeData.headers.cookie);
-		var sessionId = handshakeCookie['connect.sid'];
+
+        // dumdum mode, don't authorise them
+        if(!!handshakeCookie.dumdum){
+            handshakeData.username = 'dumdum';
+            handshakeData.dumdum = true;
+            console.log('authed a dumdum.');
+            return accept(null, true);
+        }
+
+        var sessionId = handshakeCookie['connect.sid'];
 		if(!sessionId) return accept('No Express SID in cookie');
 
+        // regular user
 		sessionStore.get(sessionId.substr(2,24), function(err, session){
 			if(err || !session) return accept('No matching session in store.');
 
 			// attach the session to handshakedata so we can grab it later
 			handshakeData.session = session;
+            handshakeData.username = session.name;
+            handshakeData.dumdum = false;
 			accept(null, true);
 		});
     });
@@ -86,13 +99,15 @@ io.configure(function(){
 io.sockets.on('connection', function(socket){
     var username;
 	try{
-		username = socket.handshake.session.name;
+		username = socket.handshake.username;
 	} catch(e){}
 
     if(!username){
 		console.error('No username on handshake session...');
 		return socket.disconnect();
 	}
+
+    var dumdum = socket.handshake.dumdum;
 
 	console.info(username + ' connected to socket');
 	onlineUsers.push(username);
@@ -102,14 +117,18 @@ io.sockets.on('connection', function(socket){
 
     socket.emit('samplesVersion', crypto.createHash('md5').update(JSON.stringify(config.samples)).digest('hex'));
 
-    socket.on('play', function(sampleId){
-        if(LOGALL) console.log(username + ' triggered ' + sampleId);
-        socket.broadcast.emit('play', sampleId, username);
-    });
-
     socket.on('disconnect', function(){
         onlineUsers = _.without(onlineUsers, username);
     	io.sockets.emit('user.online', onlineUsers);
+    });
+
+
+    // if you're a dumdum user, we return here, because you can't emit a play event.
+    if(dumdum) return;
+
+    socket.on('play', function(sampleId){
+        if(LOGALL) console.log(username + ' triggered ' + sampleId);
+        socket.broadcast.emit('play', sampleId, username);
     });
 
 });

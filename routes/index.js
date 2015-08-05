@@ -20,9 +20,24 @@ var Routes = function(onlineUserList){
 Routes.prototype.index = function(req, res){
     // authed users only
 	if(!req.session.name) res.redirect('/login');
+    res.clearCookie('dumdum');
 	res.render('index', {
         samples: config.samples,
         samplesVersion: crypto.createHash('md5').update(JSON.stringify(config.samples)).digest('hex')
+    });
+};
+
+/**
+ * Dumdum mode. Works without a login, but you can only receive.
+ * Useful for putting on people's computers while they're away from their desk.
+ */
+
+Routes.prototype.dumdum = function(req, res){
+    res.cookie('dumdum', true);
+    res.render('index', {
+        samples: config.samples,
+        samplesVersion: crypto.createHash('md5').update(JSON.stringify(config.samples)).digest('hex'),
+        dumdum: true
     });
 };
 

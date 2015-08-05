@@ -6,7 +6,7 @@
     <link rel="stylesheet" type="text/css" href="style.css">
 
 </head>
-<body>
+<body class="{{#dumdum}}dumdum{{/dumdum}}">
 
     <div class="wrapper">
         <div class="controls">

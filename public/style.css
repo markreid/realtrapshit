@@ -4,6 +4,10 @@ body {
 	text-align: center;
 }
 
+body.dumdum * {
+	display: none !important;
+}
+
 #oneonly {
 	text-align: center;
 }
