@@ -11,14 +11,17 @@ var http = require('http');
 var path = require('path');
 var cookie = require('cookie');
 var MemoryStore = require('./node_modules/express/node_modules/connect/lib/middleware/session/memory');
+var crypto = require('crypto');
 
+// parse our config
+var config = require('./config.json');
 
 
 // Alrighty, let's configure Express
 var app = express();
 var sessionStore = new MemoryStore();
 
-app.set('port', process.env.PORT || 4000);
+app.set('port', process.env.PORT || config.server.port);
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'hjs');
 app.use(express.favicon());
@@ -55,7 +58,6 @@ var server = http.createServer(app).listen(app.get('port'), function(){
 
 // parse command line arguments
 var LOGALL = _.contains(process.argv, '--logall');
-
 
 // set up the sockets
 var io = require('socket.io').listen(server);
@@ -97,6 +99,8 @@ io.sockets.on('connection', function(socket){
 
 	socket.emit('user.online', onlineUsers);
     socket.broadcast.emit('user.connected', username);
+
+    socket.emit('samplesVersion', crypto.createHash('md5').update(JSON.stringify(config.samples)).digest('hex'));
 
     socket.on('play', function(sampleId){
         if(LOGALL) console.log(username + ' triggered ' + sampleId);

@@ -13,25 +13,9 @@
             <label><input id="oneonly" type="checkbox">One at a time</label>
             <p class="help"><i>pro tip:</i> use the number keys, hold shift for more</p>
         </div>
-        <button class="pad" data-sample="airhorn" disabled>AIRHORN</button>
-        <button class="pad" data-sample="bort" disabled>SURF BORT</button>
-        <button class="pad" data-sample="realtrapshit" disabled>REAL TRAP SHIT</button>
-        <button class="pad" data-sample="damnson" disabled>DAMN SON</button>
-        <button class="pad" data-sample="grindin" disabled>GRINDIN</button>
-        <button class="pad" data-sample="yeahboy" disabled>YEAH BOY</button>
-        <button class="pad" data-sample="whut" disabled>WHUT</button>
-        <button class="pad" data-sample="cuffyochick" disabled>CUFF YO CHICK</button>
-        <button class="pad" data-sample="ross" disabled>ROSS</button>
-        <button class="pad" data-sample="hustlin" disabled>HUSTLIN</button>
-        <button class="pad" data-sample="maddawg" disabled>MAD DAWG</button>
-        <button class="pad" data-sample="maddog" disabled>MAD DOG</button>
-        <button class="pad" data-sample="drank" disabled>DRANK</button>
-        <button class="pad" data-sample="gat" disabled>GAT</button>
-        <button class="pad" data-sample="cash" disabled>CASH</button>
-        <button class="pad" data-sample="rekus" disabled>LAWD REKUS</button>
-        <button class="pad" data-sample="icq" disabled>ICQ</button>
-        <button class="pad" data-sample="lisa" disabled>LISA</button>
-        <button class="pad" data-sample="gothim" disabled>GOT HIM</button>
+        {{#samples}}
+            <button class="pad" data-sample="{{filename}}" disabled>{{name}}</button>
+        {{/samples}}
     </div>
 
     <div id="volume">
@@ -59,7 +43,6 @@
             var sampleNames = [];
             var loadedSamples = [];
             var sampleCount = pads.length;
-
 
             for(var z=0; z<sampleCount; z++){
                 (function(){
@@ -193,6 +176,10 @@
 
             socket.on('error', function(){
                 console.log('ERROR');
+            });
+
+            socket.on('samplesVersion', function(samplesVersion){
+                if(samplesVersion !== '{{samplesVersion}}') window.location = window.location;
             });
 
         })();

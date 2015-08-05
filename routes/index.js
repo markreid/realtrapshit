@@ -3,6 +3,10 @@
  */
 
 var _ = require('underscore');
+var crypto = require('crypto');
+
+
+var config = require('../config.json');
 
 
 var Routes = function(onlineUserList){
@@ -16,7 +20,10 @@ var Routes = function(onlineUserList){
 Routes.prototype.index = function(req, res){
     // authed users only
 	if(!req.session.name) res.redirect('/login');
-	res.render('index');
+	res.render('index', {
+        samples: config.samples,
+        samplesVersion: crypto.createHash('md5').update(JSON.stringify(config.samples)).digest('hex')
+    });
 };
 
 /**

@@ -1,0 +1,65 @@
+{
+    "server": {
+        "port": 5000
+    },
+    "samples": [
+        {
+            "name": "airhorn",
+            "filename": "airhorn"
+        }, {
+            "name": "surf bort",
+            "filename": "bort"
+        }, {
+            "name": "real trap shit",
+            "filename": "bort"
+        }, {
+            "name": "damn son",
+            "filename": "damnson"
+        }, {
+            "name": "grindin",
+            "filename": "grindin"
+        }, {
+            "name": "yeah boy",
+            "filename": "yeahboy"
+        }, {
+            "name": "whut",
+            "filename": "whut"
+        }, {
+            "name": "cuff yo chick",
+            "filename": "cuffyochick"
+        }, {
+            "name": "ross",
+            "filename": "ross"
+        }, {
+            "name": "hustlin",
+            "filename": "hustlin"
+        }, {
+            "name": "mad dawg",
+            "filename": "maddawg"
+        }, {
+            "name": "mad dog",
+            "filename": "maddog"
+        }, {
+            "name": "drank",
+            "filename": "drank"
+        }, {
+            "name": "gat",
+            "filename": "gat"
+        }, {
+            "name": "ca-ching",
+            "filename": "cash"
+        }, {
+            "name": "lawd rekus",
+            "filename": "rekus"
+        }, {
+            "name": "lisa",
+            "filename": "lisa"
+        }, {
+            "name": "got him",
+            "filename": "gothim"
+        }, {
+            "name": "sad trombone",
+            "filename": "sadtrombone"
+        }
+    ]
+}
