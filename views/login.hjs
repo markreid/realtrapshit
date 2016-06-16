@@ -8,6 +8,7 @@
 </head>
 <body>
     <form method="POST" action="/login">
+        <h1>REAL TRAP SHIT</h1>
         <p>{{error}}</p>
         <input type"text" placeholder="Gimme your name" name="name">
         <button type="submit">LET'S GET BUSY</button>

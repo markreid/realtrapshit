@@ -2,14 +2,25 @@
   "name": "real-trap-shit",
   "version": "0.3.0",
   "private": true,
+  "engines": {
+    "node": ">6.0.0"
+  },
   "scripts": {
-    "start": "node app.js"
+    "start": "node app",
+    "lint": "eslint ."
   },
   "dependencies": {
     "cookie": "0.1.0",
     "express": "^3.4.8",
+    "express-session": "^1.13.0",
     "hjs": "*",
-    "socket.io": "0.9.14",
-    "underscore": "^1.8.3"
+    "lodash": "^4.13.1",
+    "method-override": "^2.3.6",
+    "socket.io": "^1.4.6",
+    "winston": "^2.2.0"
+  },
+  "devDependencies": {
+    "eslint": "^2.12.0",
+    "eslint-config-airbnb": "^9.0.1"
   }
 }

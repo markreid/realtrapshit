@@ -23,7 +23,7 @@
     </div>
 
     <div id="online">
-        Users online: <span></span>
+        ONLINE USERS: <span></span>
     </div>
 
     <div id="error"></div>
@@ -141,6 +141,7 @@
 
             // socket listeners
             socket.on('play', function(id, user){
+                console.log('playing ' + id);
                 playSample(id);
                 logPlay(id, user);
             });
@@ -154,28 +155,20 @@
             });
 
             socket.on('user.connected', function(user){
-                console.log('user connected: ' + user);
-                onlineUsers[user] = true;
-                renderOnlineUsers();
-                log(user + ' joined.');
+                log(user + ' joined the party.');
             });
 
             socket.on('user.disconnected', function(user){
-                console.log('user disconnected: ' + user);
-                delete(onlineUsers[user]);
-                renderOnlineUsers();
-                log(user + ' left.');
+                log(user + ' left the party.');
             });
 
-            socket.on('user.online', function(users){
-                console.log('users online');
-                console.log(users);
+            socket.on('users', function(users){
                 resetOnlineUsers(users);
                 renderOnlineUsers();
             });
 
-            socket.on('error', function(){
-                console.log('ERROR');
+            socket.on('error', function(err){
+                console.error(err);
             });
 
             socket.on('samplesVersion', function(samplesVersion){
