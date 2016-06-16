@@ -34,12 +34,6 @@ module.exports = {
       name: 'hustlin',
       filename: 'hustlin',
     }, {
-      name: 'mad dawg',
-      filename: 'maddawg',
-    }, {
-      name: 'mad dog',
-      filename: 'maddog',
-    }, {
       name: 'drank',
       filename: 'drank',
     }, {
