@@ -1,25 +1,30 @@
+/* eslint-disable no-param-reassign */
 /**
- * RealTrapShit.
- * WHUT.
+ * REAL TRAP SHIT
  */
 
-
-// module dependencies
-var express = require('express');
-var _ = require('underscore');
-var http = require('http');
-var path = require('path');
-var cookie = require('cookie');
-var MemoryStore = require('./node_modules/express/node_modules/connect/lib/middleware/session/memory');
-var crypto = require('crypto');
-
-// parse our config
-var config = require('./config.json');
+const express = require('express');
+const http = require('http');
+const socketio = require('socket.io');
+const path = require('path');
+const cookie = require('cookie');
+const session = require('express-session');
+const MemoryStore = session.MemoryStore;
+const crypto = require('crypto');
+const log = require('winston');
+const _ = require('lodash');
 
 
-// Alrighty, let's configure Express
-var app = express();
-var sessionStore = new MemoryStore();
+// parse config
+const config = require('./config.js');
+
+log.level = process.env.LOG_LEVEL || config.LOG_LEVEL || 'debug';
+
+const app = express();
+const sessionStore = new MemoryStore();
+
+app.use(express.favicon());
+
 
 app.set('port', process.env.PORT || config.server.port);
 app.set('views', path.join(__dirname, 'views'));
@@ -28,22 +33,30 @@ app.use(express.favicon());
 app.use(express.logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded());
-app.use(express.methodOverride());
 app.use(express.cookieParser());
-app.use(express.session({secret:'oh oh oh secrety secrets', store:sessionStore}));
+app.use(express.session({ secret: 'oh oh oh secrety secrets', store: sessionStore }));
 app.use(app.router);
 app.use(express.static(path.join(__dirname, 'public')));
 
 // dev env middleware
-if ('development' == app.get('env')) {
+if (app.get('env') === 'development') {
   app.use(express.errorHandler());
 }
 
 
+const server = require('http').Server(app);
+const io = socketio(server);
+
+server.listen(app.get('port'), () => {
+  log.debug(`Express is listening on port ${app.get('port')}`);
+});
+
+
 // routes - they need access to the onlineUsers array for rejecting in-use usernames
-var onlineUsers = [];
-var Routes = require('./routes');
-var routes = new Routes(onlineUsers);
+const onlineUsers = new Set();
+
+const Routes = require('./routes');
+const routes = new Routes(onlineUsers);
 
 app.get('/', routes.index);
 app.get('/dumdum', routes.dumdum);
@@ -51,84 +64,66 @@ app.get('/login', routes.login);
 app.post('/login', routes.loginPost.bind(routes));
 
 
-// listen for incoming connections
-var server = http.createServer(app).listen(app.get('port'), function(){
-	console.log('Express server listening on port ' + app.get('port'));
+io.use((socket, next) => {
+  const socketCookie = cookie.parse(socket.request.headers.cookie);
+
+  // user is in dumdum mode, they don't need a name.
+  if (!!socketCookie.dumdum) {
+    log.info('Authenticated a dumdum');
+    socket.request.session = {
+      name: 'dumdum',
+    };
+    socket.request.dumdum = true;
+    return next();
+  }
+
+  const sessionId = socketCookie['connect.sid'];
+  if (!sessionId) return next('No connect.sid in cookie');
+
+  sessionStore.get(sessionId.substr(2, 32), (err, foundSession) => {
+    if (err || !foundSession) {
+      return next('No matching session in store');
+    }
+    socket.request.session = foundSession;
+    return next(null, true);
+  });
+
+  return true;
 });
 
 
-// parse command line arguments
-var LOGALL = _.contains(process.argv, '--logall');
+io.on('connection', (socket) => {
+  const username = socket.request.session.name;
+  if (!username) {
+    // dunno how this could happen, but we'll abort if it does.
+    log.error('No username on handshake session...');
+    return socket.disconnect();
+  }
 
-// set up the sockets
-var io = require('socket.io').listen(server);
-io.configure(function(){
-    io.enable('log');
-    io.set('log level', 2);
-    io.set('authorization', function socketHandshake(handshakeData, accept){
-        if(!handshakeData.headers.cookie) return accept('No cookies in handshakeData');
+  const dumdum = !!socket.request.dumdum;
+  log.info(`${username} opened a socket connection`);
 
-		var handshakeCookie = cookie.parse(handshakeData.headers.cookie);
+  onlineUsers.add(username);
 
-        // dumdum mode, don't authorise them
-        if(!!handshakeCookie.dumdum){
-            handshakeData.username = 'dumdum';
-            handshakeData.dumdum = true;
-            console.log('authed a dumdum.');
-            return accept(null, true);
-        }
+  io.emit('users', [...onlineUsers]);
+  io.emit('user.connected', username);
+  io.emit('samplesVersion', crypto.createHash('md5').update(JSON.stringify(config.samples)).digest('hex'));
 
-        var sessionId = handshakeCookie['connect.sid'];
-		if(!sessionId) return accept('No Express SID in cookie');
-
-        // regular user
-		sessionStore.get(sessionId.substr(2,24), function(err, session){
-			if(err || !session) return accept('No matching session in store.');
-
-			// attach the session to handshakedata so we can grab it later
-			handshakeData.session = session;
-            handshakeData.username = session.name;
-            handshakeData.dumdum = false;
-			accept(null, true);
-		});
-    });
-});
-
-
-// socket listeners
-io.sockets.on('connection', function(socket){
-    var username;
-	try{
-		username = socket.handshake.username;
-	} catch(e){}
-
-    if(!username){
-		console.error('No username on handshake session...');
-		return socket.disconnect();
-	}
-
-    var dumdum = socket.handshake.dumdum;
-
-	console.info(username + ' connected to socket');
-	onlineUsers.push(username);
-
-	socket.emit('user.online', onlineUsers);
-    socket.broadcast.emit('user.connected', username);
-
-    socket.emit('samplesVersion', crypto.createHash('md5').update(JSON.stringify(config.samples)).digest('hex'));
-
-    socket.on('disconnect', function(){
-        onlineUsers = _.without(onlineUsers, username);
-    	io.sockets.emit('user.online', onlineUsers);
-    });
+  socket.on('disconnect', () => {
+    onlineUsers.delete(username);
+    io.emit('users', [...onlineUsers]);
+    io.emit('user.disconnected', username);
+  });
 
 
     // if you're a dumdum user, we return here, because you can't emit a play event.
-    if(dumdum) return;
+  if (dumdum) return false;
 
-    socket.on('play', function(sampleId){
-        if(LOGALL) console.log(username + ' triggered ' + sampleId);
-        socket.broadcast.emit('play', sampleId, username);
-    });
+  socket.on('play', (sampleId) => {
+    socket.broadcast.emit('play', sampleId, username);
+    const sampleName = config.samples[sampleId].name;
+    log.debug(`${username} fired a ${sampleName}`);
+  });
 
+  return true;
 });
