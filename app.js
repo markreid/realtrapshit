@@ -12,7 +12,6 @@ const session = require('express-session');
 const MemoryStore = session.MemoryStore;
 const crypto = require('crypto');
 const log = require('winston');
-const _ = require('lodash');
 
 
 // parse config
@@ -43,7 +42,7 @@ if (app.get('env') === 'development') {
 }
 
 
-const server = require('http').Server(app);
+const server = new http.Server(app);
 const io = socketio(server);
 
 server.listen(app.get('port'), () => {
@@ -122,7 +121,7 @@ io.on('connection', (socket) => {
   socket.on('play', (sampleId) => {
     socket.broadcast.emit('play', sampleId, username);
     const sampleName = config.samples[sampleId].name;
-    log.debug(`${username} fired a ${sampleName} to ${onlineUsers.size -1} other users` );
+    log.debug(`${username} fired a ${sampleName} to ${onlineUsers.size - 1} other users`);
   });
 
   return true;
