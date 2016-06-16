@@ -30,7 +30,6 @@ app.set('port', process.env.PORT || config.server.port);
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'hjs');
 app.use(express.favicon());
-app.use(express.logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded());
 app.use(express.cookieParser());
@@ -101,9 +100,9 @@ io.on('connection', (socket) => {
   }
 
   const dumdum = !!socket.request.dumdum;
-  log.info(`${username} opened a socket connection`);
 
   onlineUsers.add(username);
+  log.info(`${username} opened a socket connection (${onlineUsers.size} online)`);
 
   io.emit('users', [...onlineUsers]);
   io.emit('user.connected', username);
@@ -113,6 +112,7 @@ io.on('connection', (socket) => {
     onlineUsers.delete(username);
     io.emit('users', [...onlineUsers]);
     io.emit('user.disconnected', username);
+    log.info(`${username} closed their connection (${onlineUsers.size} online)`);
   });
 
 
@@ -122,7 +122,7 @@ io.on('connection', (socket) => {
   socket.on('play', (sampleId) => {
     socket.broadcast.emit('play', sampleId, username);
     const sampleName = config.samples[sampleId].name;
-    log.debug(`${username} fired a ${sampleName}`);
+    log.debug(`${username} fired a ${sampleName} to ${onlineUsers.size -1} other users` );
   });
 
   return true;
