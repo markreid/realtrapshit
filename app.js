@@ -4,6 +4,7 @@
  */
 
 const express = require('express');
+const cookieParser = require('cookie-parser');
 const http = require('http');
 const socketio = require('socket.io');
 const path = require('path');
@@ -11,36 +12,32 @@ const cookie = require('cookie');
 const session = require('express-session');
 const MemoryStore = session.MemoryStore;
 const crypto = require('crypto');
-const log = require('winston');
-
+const winston = require('winston');
 
 // parse config
 const config = require('./config.js');
 
-log.level = process.env.LOG_LEVEL || config.LOG_LEVEL || 'debug';
+const log = winston.createLogger({
+  level: process.env.LOG_LEVEL || config.LOG_LEVEL || 'debug',
+  transports: [new winston.transports.Console()]
+});
 
 const app = express();
 const sessionStore = new MemoryStore();
 
-app.use(express.favicon());
-
-
 app.set('port', process.env.PORT || config.server.port);
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'hjs');
-app.use(express.favicon());
 app.use(express.json());
-app.use(express.urlencoded());
-app.use(express.cookieParser());
-app.use(express.session({ secret: 'oh oh oh secrety secrets', store: sessionStore }));
-app.use(app.router);
+app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
+app.use(session({
+  secret: 'oh oh oh secrety secrets',
+  store: sessionStore,
+  resave: true,
+  saveUninitialized: true
+}));
 app.use(express.static(path.join(__dirname, 'public')));
-
-// dev env middleware
-if (app.get('env') === 'development') {
-  app.use(express.errorHandler());
-}
-
 
 const server = new http.Server(app);
 const io = socketio(server);

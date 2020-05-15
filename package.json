@@ -12,17 +12,18 @@
     "docker": "docker run -d -p 5000:5000 realtrapshit"
   },
   "dependencies": {
-    "cookie": "0.1.0",
-    "express": "^3.4.8",
+    "cookie": "^0.4.1",
+    "cookie-parser": "^1.4.5",
+    "express": "^4.17.1",
     "express-session": "^1.13.0",
     "hjs": "*",
     "lodash": "^4.13.1",
-    "method-override": "^2.3.6",
-    "socket.io": "^1.4.6",
-    "winston": "^2.2.0"
+    "method-override": "^3.0.0",
+    "socket.io": "^2.3.0",
+    "winston": "^3.2.1"
   },
   "devDependencies": {
-    "eslint": "^2.12.0",
-    "eslint-config-airbnb": "^9.0.1"
+    "eslint": "^6.8.0",
+    "eslint-config-airbnb": "^18.1.0"
   }
 }
