@@ -7,7 +7,9 @@
   },
   "scripts": {
     "start": "node app",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "build": "docker build -t realtrapshit .",
+    "docker": "docker run -d -p 5000:5000 realtrapshit"
   },
   "dependencies": {
     "cookie": "0.1.0",
