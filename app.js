@@ -10,7 +10,8 @@ const socketio = require('socket.io');
 const path = require('path');
 const cookie = require('cookie');
 const session = require('express-session');
-const MemoryStore = session.MemoryStore;
+
+const { MemoryStore } = session;
 const crypto = require('crypto');
 const winston = require('winston');
 
@@ -19,7 +20,7 @@ const config = require('./config.js');
 
 const log = winston.createLogger({
   level: process.env.LOG_LEVEL || config.LOG_LEVEL || 'debug',
-  transports: [new winston.transports.Console()]
+  transports: [new winston.transports.Console()],
 });
 
 const app = express();
@@ -35,7 +36,7 @@ app.use(session({
   secret: 'oh oh oh secrety secrets',
   store: sessionStore,
   resave: true,
-  saveUninitialized: true
+  saveUninitialized: true,
 }));
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -51,6 +52,7 @@ server.listen(app.get('port'), () => {
 const onlineUsers = new Set();
 
 const Routes = require('./routes');
+
 const routes = new Routes(onlineUsers);
 
 app.get('/', routes.index);
@@ -63,7 +65,7 @@ io.use((socket, next) => {
   const socketCookie = cookie.parse(socket.request.headers.cookie);
 
   // user is in dumdum mode, they don't need a name.
-  if (!!socketCookie.dumdum) {
+  if (socketCookie.dumdum) {
     log.info('Authenticated a dumdum');
     socket.request.session = {
       name: 'dumdum',
@@ -112,7 +114,7 @@ io.on('connection', (socket) => {
   });
 
 
-    // if you're a dumdum user, we return here, because you can't emit a play event.
+  // if you're a dumdum user, we return here, because you can't emit a play event.
   if (dumdum) return false;
 
   socket.on('play', (sampleId) => {
